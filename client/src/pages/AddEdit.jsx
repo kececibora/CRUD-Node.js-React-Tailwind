@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
-import { useNavigate, userParams, Link } from "react-router-dom";
+import { redirect, useParams, Link } from "react-router-dom";
+
+import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 
 const initialstate = {
   name: "",
@@ -14,8 +16,25 @@ function AddEdit() {
 
   const { name, email, contact } = state;
 
+  const history = redirect();
+
   const handleSubmit = (e) => {
-    e.preventDefaul();
+    e.preventDefault();
+    if (!name || !email || !contact) {
+      toast.error("Lütfen Gerekli Yerleri Doldurun");
+    } else {
+      axios
+        .post("http://localhost:5000/api/post", {
+          name,
+          email,
+          contact,
+        })
+        .then(() => {
+          setState({ name: "", email: "", contact: "" });
+          setTimeout(() => history.push("/"), 5000);
+        })
+        .catch((err) => toast.error(err.response.data));
+    }
   };
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -24,9 +43,10 @@ function AddEdit() {
 
   return (
     <div className="mt-24">
+      <ToastContainer position="top-center" />
       <form
-        className="m-auto p-4 max-w-sm content-center"
         onSubmit={handleSubmit}
+        className="m-auto p-4 max-w-sm content-center"
       >
         <label className="text-lg" htmlFor="name">
           Name
