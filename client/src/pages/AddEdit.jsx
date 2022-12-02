@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { redirect, useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 
 import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
@@ -14,9 +14,8 @@ const initialstate = {
 function AddEdit() {
   const [state, setState] = useState(initialstate);
 
+  const navigate = useNavigate();
   const { name, email, contact } = state;
-
-  const history = redirect();
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -31,9 +30,10 @@ function AddEdit() {
         })
         .then(() => {
           setState({ name: "", email: "", contact: "" });
-          setTimeout(() => history.push("/"), 5000);
         })
         .catch((err) => toast.error(err.response.data));
+      toast.success("Başarıyla Eklendi");
+      setTimeout(() => navigate("/"), 1000);
     }
   };
   const handleInputChange = (e) => {
