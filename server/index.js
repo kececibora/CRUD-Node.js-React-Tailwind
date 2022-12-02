@@ -23,14 +23,24 @@ app.get("/api/get", (req, res) => {
   });
 });
 
+app.post("/api/post", (req, res) => {
+  const { name, email, contact } = req.body;
+  const sqlInsert = "INSERT INTO contact_db (name,email,contact) VALUES(?,?,?)";
+  db.query(sqlInsert, [name, email, contact], (error, result) => {
+    if (error) {
+      console.log(error);
+    }
+  });
+});
+
 app.get("/", (req, res) => {
   // const sqlInsert =
-  //   "INSERT INTO contact_db (name,email,contact) VALUES('burak','boraizzet0@gmail.com',5546708552)";
-  // db.query(sqlInsert, (err, result) => {
-  //   console.log("error", err);
-  //   console.log("result", result);
-  //   res.send("Hello Express!");
-  // });
+  //   "INSERT INTO contact_db (name,email,contact) VALUES('serdar','serdargurler@gmail.com',29)";
+  db.query(sqlInsert, (err, result) => {
+    console.log("error", err);
+    console.log("result", result);
+    res.send("Hello Express!");
+  });
 });
 
 app.listen(5000, () => {
