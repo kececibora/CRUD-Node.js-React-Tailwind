@@ -17,23 +17,49 @@ function AddEdit() {
   const navigate = useNavigate();
   const { name, email, contact } = state;
 
+  const { id } = useParams();
+  useEffect(() => {
+    axios
+      .get(`http://localhost:5000/api/get/${id}`)
+      .then((resp) => setState({ ...resp.data[0] }));
+  }, [id]);
+
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!name || !email || !contact) {
       toast.error("Lütfen Gerekli Yerleri Doldurun");
     } else {
-      axios
-        .post("http://localhost:5000/api/post", {
-          name,
-          email,
-          contact,
-        })
-        .then(() => {
-          setState({ name: "", email: "", contact: "" });
-        })
-        .catch((err) => toast.error(err.response.data));
-      toast.success("Başarıyla Eklendi");
-      setTimeout(() => navigate("/"), 1000);
+      if (!id) {
+        axios
+          .post("http://localhost:5000/api/post", {
+            name,
+            email,
+            contact,
+          })
+          .then(() => {
+            setState({ name: "", email: "", contact: "" });
+            toast.success("Başarıyla Eklendi");
+          })
+          .catch((err) => {
+            toast.error(err.response.data);
+          });
+        setTimeout(() => navigate("/"), 1000);
+      } else {
+        axios
+          .put(`http://localhost:5000/api/update/${id}`, {
+            name,
+            email,
+            contact,
+          })
+          .then(() => {
+            setState({ name: "", email: "", contact: "" });
+            toast.success("Başarıyla Değiştirildi");
+          })
+          .catch((err) => {
+            toast.error(err.response.data);
+          });
+        setTimeout(() => navigate("/"), 1000);
+      }
     }
   };
   const handleInputChange = (e) => {
@@ -58,7 +84,7 @@ function AddEdit() {
           id="name"
           name="name"
           placeholder="İsminiz?"
-          value={name}
+          value={name || ""}
           onChange={handleInputChange}
         />
         <br />
@@ -72,7 +98,7 @@ function AddEdit() {
           id="email"
           name="email"
           placeholder="Email?"
-          value={email}
+          value={email || ""}
           onChange={handleInputChange}
         />
         <br />
@@ -86,10 +112,14 @@ function AddEdit() {
           id="contact"
           name="contact"
           placeholder="Numaranız?"
-          value={contact}
+          value={contact || ""}
           onChange={handleInputChange}
         />
-        <input type="submit" className="input-submit" value="Save" />
+        <input
+          type="submit"
+          className="input-submit"
+          value={id ? "Update" : "Save"}
+        />
         <Link to="/">
           <input
             type="button"

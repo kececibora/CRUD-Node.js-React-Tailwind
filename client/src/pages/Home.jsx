@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { ToastContainer } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
 import { Link } from "react-router-dom";
@@ -14,6 +14,14 @@ const Home = () => {
   useEffect(() => {
     loadData();
   }, []);
+
+  const deleteContact = (id) => {
+    if (window.confirm("Silmek İstediğinize Emin Misiniz ?")) {
+      axios.delete(`http://localhost:5000/api/remove/${id}`);
+      toast.success("Başarıyla Silindi!");
+      setTimeout(() => loadData(), 500);
+    }
+  };
 
   return (
     <div className="mt-4 overflow-x-auto relative">
@@ -62,7 +70,12 @@ const Home = () => {
                   <Link to={`/update/${item.id}`}>
                     <button className="btn-yellow">Edit</button>
                   </Link>
-                  <button className="btn-red">Delete</button>
+                  <button
+                    onClick={() => deleteContact(item.id)}
+                    className="btn-red"
+                  >
+                    Delete
+                  </button>
                   <Link to={`/view/${item.id}`}>
                     <button className="btn-blue">View</button>
                   </Link>
